@@ -5,7 +5,7 @@ boardname = $(shell echo '$(boardinfo)' | jq '.[0].boards[0].FQBN')
 boardport = $(shell echo '$(boardinfo)' | jq '.[0].address')
 
 clean:
-	git clean -Xf -e '**/*.hex' -e '**/*.elf'
+	git clean -fx
 
 build-uno:
 	arduino-cli compile --fqbn arduino:avr:uno blink-sketch
