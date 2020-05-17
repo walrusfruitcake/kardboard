@@ -10,3 +10,5 @@ starting by using "Arduino UNO Keyboard HID" from http://hunt.net.nz/users/darra
 not reachable in May 2020, but available on web.archive.org
 no license found; this line is best-effort credit. thanks, darran!
 
+credit also due: the Arduino team, for firmware at: https://github.com/arduino/ArduinoCore-avr
+
