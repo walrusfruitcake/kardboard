@@ -4,11 +4,15 @@ port := $(shell arduino-cli board list | awk 'NR>1 {print $$1}')
 clean:
 	git clean -Xf -e '**/*.hex' -e '**/*.elf'
 
-build-uno:
-	arduino-cli compile --fqbn arduino:avr:uno blink-sketch
+build-uno: ensure-environment
+	arduino-cli compile --fqbn arduino:avr:uno $(sketch)
+
+ensure-environment:
+	echo "make sure '$$sketch' is set"
+	[ ! -z $(sketch) ]
 
 upload-uno: build-uno
-	arduino-cli upload --fqbn arduino:avr:uno --port $(port) blink-sketch
+	arduino-cli upload --fqbn arduino:avr:uno --port $(port) $(sketch)
 
 board-info:
 	arduino-cli board list
