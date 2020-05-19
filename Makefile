@@ -22,20 +22,36 @@ build-uno: ensure-environment
 	arduino-cli compile --fqbn arduino:avr:uno $(sketch)
 
 build: board-attached
-	arduino-cli compile --fqbn $(boardname) blink-sketch
+	arduino-cli compile --fqbn $(boardname) $(sketch)
 
-upload: clean build board-attached
-	arduino-cli upload --fqbn $(boardname) --port $(boardport) blink-sketch
+upload: clean build firmware-state/16u2 board-attached
+	arduino-cli upload --fqbn $(boardname) --port $(boardport) $(sketch)
 
-flash-16u2:
+firmware-state/16u2:
+	echo "please hard-reset the 16u2 chip"
+	read wait
+	rm -f firmware-state/*
 	sudo dfu-programmer atmega16u2 erase
 	sudo dfu-programmer atmega16u2 flash --debug 1 $(dfuhex)
 	sudo dfu-programmer atmega16u2 reset
+	touch firmware-state/16u2
+	echo "please unplug and re-plug the board"
+	read wait
 
-flash-kbd:
+firmware-state/kbd:
+	echo "please hard-reset the 16u2 chip"
+	read wait
+	rm -f firmware-state/*
 	sudo dfu-programmer atmega16u2 erase
 	sudo dfu-programmer atmega16u2 flash --debug 1 $(kbdhex)
 	sudo dfu-programmer atmega16u2 reset
+	touch firmware-state/kbd
+	echo "please unplug and re-plug the board"
+	read wait
 
-.PHONY: clean build-uno upload-uno board-attached board-info
+program-keyboard: firmware-state/16u2
+	sketch=hello-keyboard make upload
+	make firmware-state/kbd
+
+.PHONY: clean build-uno upload upload-uno board-attached board-info
 
