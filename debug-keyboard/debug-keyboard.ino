@@ -5,6 +5,10 @@ const int PIN_RIGHT=4;
 
 bool pressedState[4] = { false };
 
+const unsigned long SLURRY = 100;
+unsigned long uptime = 0;
+unsigned long lastSpoon = 0;
+
 void setup() {
   Serial.begin(9600);
   pinMode(PIN_LEFT, INPUT_PULLUP);
@@ -17,18 +21,42 @@ void setup() {
 }
 
 void loop() {
+  uptime = millis();
   if (!digitalRead(PIN_LEFT)) {
-    Serial.write("left\r\n");
+    pressedState[0] = true;
   }
   if (!digitalRead(PIN_DOWN)) {
-    Serial.write("down\r\n");
+    pressedState[1] = true;
   }
   if (!digitalRead(PIN_UP)) {
-    Serial.write("up\r\n");
+    pressedState[2] = true;
   }
   if (!digitalRead(PIN_RIGHT)) {
-    Serial.write("right\r\n");
+    pressedState[3] = true;
   }
-  delay(1000); 
+
+  if (lastSpoon + SLURRY < uptime) {
+    sendCereal();
+  }
+}
+
+void sendCereal() {
+  lastSpoon = uptime;
+  if (pressedState[0]) {
+    Serial.write("left\r\n");
+    pressedState[0] = false;
+  }
+  if (pressedState[1]) {
+    Serial.write("down\r\n");
+    pressedState[1] = false;
+  }
+  if (pressedState[2]) {
+    Serial.write("up\r\n");
+    pressedState[2] = false;
+  }
+  if (pressedState[3]) {
+    Serial.write("right\r\n");
+    pressedState[3] = false;
+  }
 }
 
